@@ -137,15 +137,35 @@ class RLDungeonGenerator:
             for r in range(start_row, end_row):
                 self.dungeon[r][col] = DungeonSqr('.')
 
+    # check each room, find the room with the closest room from another group
+    def find_nearest_room_from_other_group(self, start_group, groups):
+        pass
     # To make the dungeon fully reachable, group connected rooms together 
     # (we start off with all the rooms in a group of 1). Look for the nearest
     # room that is in a different group.
+    
     def connect_rooms(self):
         groups = {}
         for j in range(len(self.rooms)):
             groups[j] = [self.rooms[j]]
 
-        print(groups.keys())
+        # Find the smallest group
+
+        # ACTUALLY WHAT I SHOULD BE DOING!
+        # - first go through all the rooms and calculate their distances to other adjacent rooms
+        #   since I'll be using that over and over.
+        #
+        # - Until all the rooms are joined, loop over the groups, link the rooms that are closest,
+        #   adjacent. Marge those groups, continue onward.
+        smallest = 99999
+        smallest_k = None
+        for k in groups.keys():
+            if len(groups[k]) < smallest:
+                smallest = len(groups[k])
+                smallest_k = k
+            
+        print(smallest_k)
+
         return
         unjoined = copy(self.rooms)
 
