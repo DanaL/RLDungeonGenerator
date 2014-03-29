@@ -124,6 +124,12 @@ class RLDungeonGenerator:
                 end_col = room1.col                
             for c in range(start_col, end_col):
                 self.dungeon[row][c] = DungeonSqr('.')
+
+            if end_col - start_col >= 4:
+                self.dungeon[row][start_col] = DungeonSqr('+')
+                self.dungeon[row][end_col - 1] = DungeonSqr('+')
+            elif start_col == end_col - 1:
+                self.dungeon[row][start_col] = DungeonSqr('+')
         else:
             col = choice(room2[1])
             # Figure out which room is above the other
@@ -136,6 +142,12 @@ class RLDungeonGenerator:
 
             for r in range(start_row, end_row):
                 self.dungeon[r][col] = DungeonSqr('.')
+
+            if end_row - start_row >= 4:
+                self.dungeon[start_row][col] = DungeonSqr('+')
+                self.dungeon[end_row - 1][col] = DungeonSqr('+')
+            elif start_row == end_row - 1:
+                self.dungeon[start_row][col] = DungeonSqr('+')
 
     # Find two nearby rooms that are in difference groups, draw
     # a corridor between them and merge the groups
