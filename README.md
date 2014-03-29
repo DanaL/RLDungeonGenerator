@@ -66,3 +66,5 @@ Example output to show what the dungeon maps it creates look like:
 #######################.........###########################.......########################
 ##########################################################################################
 ```
+
+This code is released into the Public Domain.

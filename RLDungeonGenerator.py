@@ -1,3 +1,4 @@
+# This code is released into the Public Domain.
 from math import sqrt
 from random import random
 from random import randrange
