@@ -19,7 +19,7 @@ rooms is four or greater squares long (or exactly one square long), I put doors 
 
 Example output to show what the dungeon maps it creates look like:
 
-<code>
+<code style="font-size:8px">
 ##########################################################################################
 ################.......###########.........###############################################
 #..........#####.......###########.........################.......########################
