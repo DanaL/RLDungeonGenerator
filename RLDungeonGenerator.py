@@ -70,9 +70,8 @@ class RLDungeonGenerator:
             section_width = leaf[3] - leaf[1]
             section_height = leaf[2] - leaf[0]
 
-            if section_height < 5 or section_width < 5:
-                continue
-
+            # The actual room's height and width will be 60-100% of the 
+            # available section. 
             room_width = round(randrange(60, 100) / 100 * section_width)
             room_height = round(randrange(60, 100) / 100 * section_height)
 
@@ -216,6 +215,6 @@ class RLDungeonGenerator:
                 row += self.dungeon[r][c].get_ch()
             print(row)
 
-dg = RLDungeonGenerator(90, 45)
+dg = RLDungeonGenerator(75, 40)
 dg.generate_map()
 dg.print_map()
