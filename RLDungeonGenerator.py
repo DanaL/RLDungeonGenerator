@@ -137,70 +137,60 @@ class RLDungeonGenerator:
             for r in range(start_row, end_row):
                 self.dungeon[r][col] = DungeonSqr('.')
 
-    # check each room, find the room with the closest room from another group
-    def find_nearest_room_from_other_group(self, start_group, groups):
-        pass
-    # To make the dungeon fully reachable, group connected rooms together 
-    # (we start off with all the rooms in a group of 1). Look for the nearest
-    # room that is in a different group.
-    
+    # Find two nearby rooms that are in difference groups, draw
+    # a corridor between them and merge the groups
+    def find_closest_unconnect_groups(self, groups, room_dict):
+        shortest_distance = 99999
+        start = None
+        start_group = None
+        nearest = None
+
+        for group in groups:
+            for room in group:
+                key = (room.row, room.col)
+                for other in room_dict[key]:
+                    if not other[0] in group and other[3] < shortest_distance:
+                        shortest_distance = other[3]
+                        start = room
+                        nearest = other
+                        start_group = group
+
+        self.carve_corridor_between_rooms(start, nearest)
+
+        # Merge the groups
+        other_group = None
+        for group in groups:
+            if nearest[0] in group:
+                other_group = group
+                break
+
+        start_group += other_group
+        groups.remove(other_group)
+        
     def connect_rooms(self):
-        groups = {}
-        for j in range(len(self.rooms)):
-            groups[j] = [self.rooms[j]]
-
-        # Find the smallest group
-
-        # ACTUALLY WHAT I SHOULD BE DOING!
-        # - first go through all the rooms and calculate their distances to other adjacent rooms
-        #   since I'll be using that over and over.
+        # Build a dictionary containing an entry for each room. Each bucket will
+        # hold a list of the adjacent rooms, weather they are adjacent along rows or 
+        # columns and the distance between them.
         #
-        # - Until all the rooms are joined, loop over the groups, link the rooms that are closest,
-        #   adjacent. Marge those groups, continue onward.
-        smallest = 99999
-        smallest_k = None
-        for k in groups.keys():
-            if len(groups[k]) < smallest:
-                smallest = len(groups[k])
-                smallest_k = k
-            
-        print(smallest_k)
-
-        return
-        unjoined = copy(self.rooms)
-
-        while len(unjoined) > 1:
-            room = choice(unjoined)
-            unjoined.remove(room)
-            
-            #print(room.row, room.col, room.row + room.height, room.col + room.width)
-            #for r in range(room.row, room.row + room.height):
-            #    for c in range(room.col, room.col + room.width):
-            #        self.dungeon[r][c] = DungeonSqr('1')
-            
-            nearest = 99999
-            nearest_room = None
-
-            # find candidate
-            for candidate in unjoined:
-                adj = self.are_rooms_adjacent(room, candidate)
-                if len(adj[0]) > 0 or len(adj[1]) > 0:
-                    d = self.distance_between_rooms(room, candidate)
-                    if d < nearest:
-                        nearest = d
-                        if len(adj[0]) > 0:
-                            nearest_room = (candidate, adj[0], 'rows')
-                        else:
-                            nearest_room = (candidate, adj[1], 'cols')
-
-            #for r in range(nearest_room[0].row, nearest_room[0].row + nearest_room[0].height):
-            #    for c in range(nearest_room[0].col, nearest_room[0].col + nearest_room[0].width):
-            #        self.dungeon[r][c] = DungeonSqr('2')
-
-            self.carve_corridor_between_rooms(room, nearest_room)
-            unjoined.remove(nearest_room[0])
-            
-            
+        # Also build the initial groups (which start of as a list of individual rooms)
+        groups = []
+        room_dict = {}
+        for room in self.rooms:
+            key = (room.row, room.col)
+            room_dict[key] = []
+            for other in self.rooms:
+                other_key = (other.row, other.col)
+                if key == other_key: continue
+                adj = self.are_rooms_adjacent(room, other)
+                if len(adj[0]) > 0:
+                    room_dict[key].append((other, adj[0], 'rows', self.distance_between_rooms(room, other)))
+                elif len(adj[1]) > 0:
+                    room_dict[key].append((other, adj[1], 'cols', self.distance_between_rooms(room, other)))
+        
+            groups.append([room])
+    
+        while len(groups) > 1:
+            self.find_closest_unconnect_groups(groups, room_dict)
 
     def generate_map(self):
         self.random_split(1, 1, self.height - 1, self.width - 1)
