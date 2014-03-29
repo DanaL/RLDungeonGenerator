@@ -1,7 +1,5 @@
-from copy import copy
 from math import sqrt
 from random import random
-from random import randint
 from random import randrange
 from random import choice
 
